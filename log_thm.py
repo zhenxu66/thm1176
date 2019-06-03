@@ -68,6 +68,11 @@ if __name__ == '__main__':
 
     data_stack = []  # list is thread safe
 
+    # Get device id string and print output. This can be used to check communications are OK
+    device_id = thm.get_id()
+    for key in thm.id_fields:
+        print('{}: {}'.format(key, device_id[key]))
+
     # Start the monitoring thread
     thread = threading.Thread(target=thm.start_acquisition)
     thread.start()

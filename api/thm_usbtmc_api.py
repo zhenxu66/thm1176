@@ -135,6 +135,7 @@ class Thm1176(usbtmc.Instrument):
                    'Temperature']  # Order matters, this is linked to the fetch command that is sent to retrived data
     n_digits = 5
     defaults = {'block_size': 10, 'period': 0.5, 'range': '0.1T', 'average': 1, 'format': 'INTEGER'}
+    id_fields = ['manufacturer', 'model', 'serial', 'version']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -248,6 +249,19 @@ class Thm1176(usbtmc.Instrument):
                     print("Error code: {}".format(res))
                     res = self.ask(':SYSTEM:ERROR?;*STB?')
                     self.errors.append(res)
+
+    def get_id(self):
+        '''
+        Get the identification string of the instrument.
+        Parse it according to expected format specified by docs.
+        :return:
+        '''
+        self.write('*IDN?')
+        res = self.read()
+        id_vals = res.split(',')
+        header = {field: val for field, val in zip(self.id_fields, id_vals)}
+
+        return header
 
     def get_data_array(self):
         '''
